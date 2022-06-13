@@ -28,9 +28,15 @@ enum layers {
   WARP_ZONE
 };
 
+enum custom_keycodes {
+  BSP_DEL = SAFE_RANGE,
+};
+
 #define TO_WARP TO(WARP_ZONE)
 #define MO_SMBL MO(SYMBOLS)
 #define MO_CTRL MO(CONTROLS)
+#define CMD_LBRC LGUI(KC_LBRC)
+#define CMD_RBRC LGUI(KC_RBRC)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE] = LAYOUT_split_3x6_3(
@@ -53,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LPRN, KC_RPRN, KC_LBRC, KC_RBRC,  KC_EQL,                      XXXXXXX,    KC_1,    KC_2,    KC_3, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI, TO_WARP, KC_BSPC,     KC_ENT, _______,    KC_0
+                                          KC_LGUI, TO_WARP, BSP_DEL,     KC_ENT, _______,    KC_0
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -63,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LCTL, XXXXXXX, KC_LEFT, KC_DOWN,KC_RIGHT, XXXXXXX,                      KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX,  KC_ESC, XXXXXXX, XXXXXXX, KC_RSFT,
+      KC_LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,CMD_LBRC,  KC_ESC,CMD_RBRC, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI, _______,  KC_SPC,     KC_ENT, TO_WARP, KC_RALT
                                       //`--------------------------'  `--------------------------'
@@ -194,6 +200,28 @@ bool oled_task_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     set_keylog(keycode, record);
+  }
+  const uint8_t mod_state = get_mods();
+  switch (keycode) {
+    // regular backspace except it's treated as delete if shift is held
+    case BSP_DEL:
+      if (mod_state & MOD_MASK_SHIFT) {
+        set_mods(mod_state & ~MOD_MASK_SHIFT);
+        if (record->event.pressed) {
+          register_code(KC_DEL);
+        } else {
+          unregister_code(KC_DEL);
+        }
+        set_mods(mod_state);
+        return false;
+      } else {
+        if (record->event.pressed) {
+          register_code(KC_BSPC);
+        } else {
+          unregister_code(KC_BSPC);
+        }
+        return false;
+      }
   }
   return true;
 }
