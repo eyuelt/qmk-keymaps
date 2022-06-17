@@ -100,6 +100,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
+// Called by the system for each key event.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   const uint8_t mod_state = get_mods();
   switch (keycode) {
@@ -124,4 +125,65 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
   }
   return true;
+}
+
+
+// ---------------------------- LEDs ---------------------------- //
+
+#define OFF -1
+
+const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
+  [BASE] = LAYOUT_split_3x6_3(
+        0, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+                          OFF, OFF, OFF,    OFF, OFF, OFF
+  ),
+
+  [SYMBOLS] = LAYOUT_split_3x6_3(
+      OFF,   0, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+                          OFF, OFF, OFF,    OFF, OFF, OFF
+  ),
+
+  [CONTROLS] = LAYOUT_split_3x6_3(
+      OFF, OFF,   0, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+                          OFF, OFF, OFF,    OFF, OFF, OFF
+  ),
+
+  [MEDIA] = LAYOUT_split_3x6_3(
+      OFF, OFF, OFF,   0, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+                          OFF, OFF, OFF,    OFF, OFF, OFF
+  ),
+
+  [WARP_ZONE] = LAYOUT_split_3x6_3(
+      OFF, OFF, OFF, OFF,   0, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+                          OFF, OFF, OFF,    OFF, OFF, OFF
+  )
+};
+
+#undef OFF
+
+// TODO: figure out how to tell the slave about the layer change
+// Called by the system to allow setting the value for all LEDs on the keyboard.
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+  const int16_t (*layer_led_hues)[MATRIX_COLS] =
+    led_hues[get_highest_layer(layer_state)];
+  for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+    for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+      if (layer_led_hues[row][col] >= 0 && layer_led_hues[row][col] < 256) {
+        const uint8_t led_index = g_led_config.matrix_co[row][col];
+        // TODO: figure out how to convert HSV to RGB
+        // TODO: get the hue value from led_hues, and keep the current saturation and value
+        rgb_matrix_set_color(led_index, RGB_BLUE);
+      }
+    }
+  }
 }
