@@ -10,6 +10,7 @@ import subprocess
 from collections import namedtuple
 
 KEYMAP_PREFIX = os.environ['USER']
+KEYBOARD_DIR_CONFIG_FILE_NAME='KEYBOARD'
 
 def log_info(msg, gap_above=False):
     print('%s\033[36mINFO: %s\033[m' % ('\n' if gap_above else '', msg))
@@ -84,9 +85,8 @@ def clean(project_root, qmk_firmware_root):
         run_cmd(['rm', hex_file], output_to_shell=False)
 
 def keymap_dirs(project_root):
-    # find all dirs directly under the project_root that contain a keymap.c
-    # TODO: change this to look for the per-keymap-dir config file instead of keymap.c
-    glob_pattern = os.path.join(project_root, '*', 'keymap.c')
+    # find all dirs directly under the project_root that contain the per-keyboard-dir config file
+    glob_pattern = os.path.join(project_root, '*', KEYBOARD_DIR_CONFIG_FILE_NAME)
     return [os.path.basename(os.path.dirname(x)) for x in glob.glob(glob_pattern)]
 
 # set up args
@@ -112,7 +112,8 @@ def main():
     if args.keyboard is not None:
         keyboard = args.keyboard
     else:
-        keyboard = 'crkbd/rev1'  # TODO: get it from a per-keymap-dir config
+        f = open(os.path.join(project_root, args.keymap_dir, KEYBOARD_DIR_CONFIG_FILE_NAME), "r")
+        keyboard = f.read().strip()
     if not os.path.isdir(os.path.join(qmk_firmware_root, 'keyboards', keyboard)):
         log_error('Invalid keyboard: %s' % keyboard)
         return
