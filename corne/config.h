@@ -78,3 +78,8 @@
 #    define ENABLE_RGB_MATRIX_SOLID_SPLASH
 #    define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
 #endif
+
+
+// Sync layer changes across the split. This is required for addressing the LEDs
+// of the slave half.
+#define SPLIT_TRANSACTION_IDS_USER LAYER_SYNC

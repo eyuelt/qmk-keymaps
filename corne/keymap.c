@@ -1,5 +1,8 @@
 #include QMK_KEYBOARD_H
+
 #include <stdio.h>
+
+#include "split-keyboard-sync.c"
 
 enum layers {
   BASE,
@@ -116,35 +119,35 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE] = LAYOUT_split_3x6_3(
         0, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,                0, OFF, OFF, OFF, OFF, OFF,
       OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   ),
 
   [SYMBOLS] = LAYOUT_split_3x6_3(
       OFF,   0, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF,   0, OFF, OFF, OFF, OFF,
       OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   ),
 
   [CONTROLS] = LAYOUT_split_3x6_3(
       OFF, OFF,   0, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF,   0, OFF, OFF, OFF,
       OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   ),
 
   [MEDIA] = LAYOUT_split_3x6_3(
       OFF, OFF, OFF,   0, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF,   0, OFF, OFF,
       OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   ),
 
   [WARP_ZONE] = LAYOUT_split_3x6_3(
       OFF, OFF, OFF, OFF,   0, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF,   0, OFF,
       OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   )
@@ -152,7 +155,6 @@ const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
 
 #undef OFF
 
-// TODO: figure out how to tell the slave about the layer change
 // Called by the system to allow setting the value for all LEDs on the keyboard.
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   const int16_t (*layer_led_hues)[MATRIX_COLS] =
@@ -167,4 +169,17 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
       }
     }
   }
+}
+
+// Called every time the layers are changed.
+layer_state_t layer_state_set_user(layer_state_t state) {
+  if (is_keyboard_master()) {
+    notify_slave_of_layer_change(state);
+  }
+  return state;
+}
+
+// Called at keyboard initialization.
+void keyboard_post_init_user(void) {
+  register_sync_transactions();
 }
