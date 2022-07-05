@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "print.h"  // for debug output
 #include "transactions.h"
 
 #define MAX_LAYER_SYNC_ATTEMPTS 10
@@ -36,7 +37,12 @@ void notify_slave_of_layer_change(const layer_state_t state) {
       if (transaction_rpc_exec(
             LAYER_SYNC, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
         break;
+      } else {
+        dprintf("LAYER_SYNC failed attempt %d\n", sync_attempt);
       }
+    }
+    if (sync_attempt >= MAX_LAYER_SYNC_ATTEMPTS) {
+      dprint("LAYER_SYNC failed all attempts!\n");
     }
   }
 }

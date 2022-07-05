@@ -181,5 +181,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 // Called at keyboard initialization.
 void keyboard_post_init_user(void) {
+#ifdef CONSOLE_ENABLE
+  // enable debug output
+  debug_enable = true;
+  debug_matrix = true;
+#endif
   register_sync_transactions();
 }
