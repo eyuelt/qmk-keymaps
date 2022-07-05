@@ -173,9 +173,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 // Called every time the layers are changed.
 layer_state_t layer_state_set_user(layer_state_t state) {
-  if (is_keyboard_master()) {
-    notify_slave_of_layer_change(state);
-  }
+  layer_sync(state);
   return state;
 }
 
@@ -187,4 +185,5 @@ void keyboard_post_init_user(void) {
   debug_matrix = true;
 #endif
   register_sync_transactions();
+  side_sync();
 }

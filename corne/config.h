@@ -82,6 +82,5 @@
 #endif
 
 
-// Sync layer changes across the split. This is required for addressing the LEDs
-// of the slave half.
-#define SPLIT_TRANSACTION_IDS_USER LAYER_SYNC
+// Transaction IDs for sending messages across the split.
+#define SPLIT_TRANSACTION_IDS_USER LAYER_SYNC, SIDE_SYNC
