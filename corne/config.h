@@ -4,7 +4,8 @@
 
 /* Select hand configuration */
 
-#define MASTER_LEFT
+#include "conditional/master_left/config.h"
+// #define MASTER_LEFT
 // #define MASTER_RIGHT
 // #define EE_HANDS
 

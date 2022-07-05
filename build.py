@@ -11,6 +11,7 @@ from collections import namedtuple
 
 KEYMAP_PREFIX = os.environ['USER']
 KEYBOARD_DIR_CONFIG_FILE_NAME='KEYBOARD'
+CONDITIONAL_DIR_NAME='conditional'
 
 def log_info(msg, gap_above=False):
     print('%s\033[36mINFO: %s\033[m' % ('\n' if gap_above else '', msg))
@@ -51,15 +52,23 @@ def update_qmk_firmware_code(qmk_firmware_root):
     run_cmd(['git', 'pull'])
     os.chdir(saved_dir)
 
-def link_keymap_files(project_root, qmk_firmware_root, keyboard, keymap_dir_name, keymap_name):
-    symlink_dest = os.path.join(project_root, keymap_dir_name)
-    keymaps_dir = os.path.join(qmk_firmware_root, 'keyboards', keyboard, 'keymaps')
-    # make the keymaps directory in case it doesn't exist
-    run_cmd(['mkdir', keymaps_dir], output_to_shell=False)
-    symlink_name = os.path.join(keymaps_dir, keymap_name)
-    log_info('Linking "%s" to "%s"' % (symlink_dest, symlink_name), gap_above=True)
-    # the -hf flags make it so the existing directory symlink is replaced each time
-    run_cmd(['ln', '-shf', symlink_dest, symlink_name])
+def copy_keymap_files(project_root, qmk_firmware_root, keyboard, keymap_dir_name, keymap_name, enabled_conditional_compilation_flags):
+    dir_to_copy = os.path.join(project_root, keymap_dir_name)
+    dest_dir = os.path.join(qmk_firmware_root, 'keyboards', keyboard, 'keymaps', keymap_name)
+    # clear dest_dir if it exists
+    run_cmd(['rm', '-r', dest_dir], output_to_shell=False)
+    run_cmd(['mkdir', '-p', dest_dir], output_to_shell=False)
+    log_info('Copying files from "%s" to "%s"' % (dir_to_copy, dest_dir), gap_above=True)
+    for filename in glob.glob(os.path.join(dir_to_copy, '*')):
+        run_cmd(['cp', '-r', filename, dest_dir])
+    # move/remove conditional files
+    for flag_dir in glob.glob(os.path.join(dest_dir, CONDITIONAL_DIR_NAME, '*')):
+        flag_name = os.path.basename(flag_dir)
+        is_flag_enabled = flag_name in enabled_conditional_compilation_flags
+        for f in glob.glob(os.path.join(flag_dir, ('true' if is_flag_enabled else 'false'), '*')):
+            run_cmd(['mv', f, flag_dir], output_to_shell=False)
+        run_cmd(['rm', '-r', os.path.join(flag_dir, 'true')], output_to_shell=False)
+        run_cmd(['rm', '-r', os.path.join(flag_dir, 'false')], output_to_shell=False)
 
 def compile_keymap(qmk_firmware_root, keyboard, keymap_name):
     log_info('Compiling with `qmk compile -kb "%s" -km "%s"`' % (keyboard, keymap_name), gap_above=True)
@@ -94,6 +103,7 @@ def parse_args(project_root):
   parser = argparse.ArgumentParser(description='Build QMK firmware with custom keymaps.')
   parser.add_argument('keymap_dir', nargs='?', choices=keymap_dirs(project_root), type=str, help='the keymap directory to build (must be under project root)')
   parser.add_argument('-kb', '--keyboard', type=str, default=None, help='the QMK keyboard that this keymap is for')
+  parser.add_argument('-cc', '--conditional_compilation_flags', type=str, default='', help='comma-separated list of bool flags that control which files are included in the build')
   parser.add_argument('--clean', action='store_true', default=False, help='delete generated files')
   return parser.parse_args()
 
@@ -117,9 +127,11 @@ def main():
     if not os.path.isdir(os.path.join(qmk_firmware_root, 'keyboards', keyboard)):
         log_error('Invalid keyboard: %s' % keyboard)
         return
+    enabled_conditional_compilation_flags = args.conditional_compilation_flags.split(',')
+    # TODO: make sure they are all valid for this keymap
 
     update_qmk_firmware_code(qmk_firmware_root)
-    link_keymap_files(project_root, qmk_firmware_root, keyboard, args.keymap_dir, keymap_name)
+    copy_keymap_files(project_root, qmk_firmware_root, keyboard, args.keymap_dir, keymap_name, enabled_conditional_compilation_flags)
     compile_keymap(qmk_firmware_root, keyboard, keymap_name)
     move_hex_file_to_root_dir(project_root, qmk_firmware_root, keyboard, keymap_name)
 
