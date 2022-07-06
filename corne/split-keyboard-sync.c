@@ -9,6 +9,13 @@
 #define MAX_SYNC_RETRIES 5
 
 
+// Declarations for helper functions.
+bool _transaction_rpc_exec_with_retries(
+    int8_t transaction_id, char *transaction_name,
+    uint8_t m2s_buffer_size, const void *m2s_buffer,
+    uint8_t s2m_buffer_size, void *s2m_buffer);
+
+
 // LAYER_SYNC
 // ==========
 // Sync layer changes across the split. Otherwise, the slave half will not know
@@ -41,21 +48,8 @@ void layer_sync(const layer_state_t state) {
   if (is_keyboard_master()) {
     LayerSyncM2S m2s = {get_highest_layer(state)};
     LayerSyncS2M s2m = {0};
-    int sync_attempt = 0;
-    for (; sync_attempt <= MAX_SYNC_RETRIES; ++sync_attempt) {
-      if (transaction_rpc_exec(
-            LAYER_SYNC, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-        break;
-      } else {
-        dprintf("LAYER_SYNC failed attempt %d\n", sync_attempt);
-        // Adding a 1ms delay here makes repeated failures much less likely.
-        // Note: _delay_ms makes the whole keyboard hang, so use it sparingly.
-        _delay_ms(1);
-      }
-    }
-    if (sync_attempt > MAX_SYNC_RETRIES) {
-      dprint("LAYER_SYNC failed all attempts!\n");
-    }
+    _transaction_rpc_exec_with_retries(
+            LAYER_SYNC, "LAYER_SYNC", sizeof(m2s), &m2s, sizeof(s2m), &s2m);
   }
 }
 
@@ -93,20 +87,11 @@ void side_sync(void) {
   if (is_keyboard_master()) {
     SideSyncM2S m2s = {is_keyboard_left()};
     SideSyncS2M s2m = {0};
-    int sync_attempt = 0;
-    for (; sync_attempt <= MAX_SYNC_RETRIES; ++sync_attempt) {
-      if (transaction_rpc_exec(
-            SIDE_SYNC, sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
-        if (m2s.master_is_left != s2m.slave_is_right) {
-          dprint("SIDE_SYNC error.\n");
-        }
-        break;
-      } else {
-        dprintf("SIDE_SYNC failed attempt %d\n", sync_attempt);
+    if (_transaction_rpc_exec_with_retries(
+          SIDE_SYNC, "SIDE_SYNC", sizeof(m2s), &m2s, sizeof(s2m), &s2m)) {
+      if (m2s.master_is_left != s2m.slave_is_right) {
+        dprint("SIDE_SYNC error.\n");
       }
-    }
-    if (sync_attempt > MAX_SYNC_RETRIES) {
-      dprint("SIDE_SYNC failed all attempts!\n");
     }
   }
 }
@@ -118,4 +103,32 @@ void side_sync(void) {
 void register_sync_transactions(void) {
   transaction_register_rpc(LAYER_SYNC, _layer_sync_slave_handler);
   transaction_register_rpc(SIDE_SYNC, _side_sync_slave_handler);
+}
+
+
+// Helpers
+// =======
+
+bool _transaction_rpc_exec_with_retries(
+    int8_t transaction_id, char *transaction_name,
+    uint8_t m2s_buffer_size, const void *m2s_buffer,
+    uint8_t s2m_buffer_size, void *s2m_buffer) {
+  int sync_attempt = 0;
+  for (; sync_attempt <= MAX_SYNC_RETRIES; ++sync_attempt) {
+    if (transaction_rpc_exec(
+          transaction_id, m2s_buffer_size,
+          m2s_buffer, s2m_buffer_size, s2m_buffer)) {
+      break;
+    } else {
+      dprintf("%s failed attempt %d\n", transaction_name, sync_attempt);
+      // Adding a 1ms delay here makes repeated failures much less likely.
+      // Note: _delay_ms makes the whole keyboard hang, so use it sparingly.
+      _delay_ms(1);
+    }
+  }
+  if (sync_attempt > MAX_SYNC_RETRIES) {
+    dprintf("%s failed all %d attempts!\n", transaction_name, sync_attempt);
+    return false;
+  }
+  return true;
 }
