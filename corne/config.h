@@ -52,33 +52,34 @@
 //
 // Custom effects can also be added. See https://docs.qmk.fm/#/feature_led_matrix?id=custom-led-matrix-effects.
 
-#    define ENABLE_RGB_MATRIX_ALPHAS_MODS
-#    define ENABLE_RGB_MATRIX_GRADIENT_LEFT_RIGHT
-#    define ENABLE_RGB_MATRIX_BREATHING
-#    define ENABLE_RGB_MATRIX_BAND_VAL
-#    define ENABLE_RGB_MATRIX_RAINDROPS
-#    define ENABLE_RGB_MATRIX_JELLYBEAN_RAINDROPS
-#    define ENABLE_RGB_MATRIX_HUE_BREATHING
-#    define ENABLE_RGB_MATRIX_HUE_WAVE
-#    define ENABLE_RGB_MATRIX_PIXEL_RAIN
-#    define ENABLE_RGB_MATRIX_PIXEL_FLOW
-#    define ENABLE_RGB_MATRIX_PIXEL_FRACTAL
+#    define ENABLE_RGB_MATRIX_ALPHAS_MODS                  // modifier keys are all a different color
+#    define ENABLE_RGB_MATRIX_GRADIENT_LEFT_RIGHT          // horizontal rainbow gradient
+#    define ENABLE_RGB_MATRIX_BREATHING                    // sine-like oscillation of value
+#    define ENABLE_RGB_MATRIX_BAND_VAL                     // horizontally travelling column of high value
+#    define ENABLE_RGB_MATRIX_RAINDROPS                    // random colors with individual keys changing color randomly
+#    define ENABLE_RGB_MATRIX_JELLYBEAN_RAINDROPS          // same as above but with soft, baby-like colors
+#    define ENABLE_RGB_MATRIX_HUE_BREATHING                // sine-like oscillation of hue
+#    define ENABLE_RGB_MATRIX_HUE_WAVE                     // horizontally travelling column of changed hue
+#    define ENABLE_RGB_MATRIX_PIXEL_RAIN                   // same as raindrops, but with more neutral colors and OFF is a valid color
+#    define ENABLE_RGB_MATRIX_PIXEL_FLOW                   // various colors move around the keys in a snake-like pattern
+#    define ENABLE_RGB_MATRIX_PIXEL_FRACTAL                // looks kinda like conway's game of life
 // enabled only if RGB_MATRIX_FRAMEBUFFER_EFFECTS is defined
-#    define ENABLE_RGB_MATRIX_TYPING_HEATMAP
-#    define ENABLE_RGB_MATRIX_DIGITAL_RAIN
+#    define ENABLE_RGB_MATRIX_TYPING_HEATMAP               // typing heat map
+#    define ENABLE_RGB_MATRIX_DIGITAL_RAIN                 // matrix-like rain falling slowly from top to bottom of keyboard, one key at a time
 // enabled only if RGB_MATRIX_KEYPRESSES or RGB_MATRIX_KEYRELEASES is defined
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTIWIDE
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_CROSS
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTICROSS
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_NEXUS
-#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTINEXUS
-#    define ENABLE_RGB_MATRIX_SPLASH
-#    define ENABLE_RGB_MATRIX_MULTISPLASH
-#    define ENABLE_RGB_MATRIX_SOLID_SPLASH
-#    define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
+// TODO: these are broken. they are being mirrored for some reason
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE        // simple glow on keypress
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE               // hue change on keypress
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE          // big glow (R=1) on keypress
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTIWIDE     // big glow (R=2) on keypress
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_CROSS         // cross-shaped glow on keypress
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTICROSS    // can't tell difference from above
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_NEXUS         // cross-shaped glow emanating out from center
+#    define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTINEXUS    // can't tell difference from above
+#    define ENABLE_RGB_MATRIX_SPLASH                       // rainbow puke emanating from keypress
+#    define ENABLE_RGB_MATRIX_MULTISPLASH                  // can't tell difference from above
+#    define ENABLE_RGB_MATRIX_SOLID_SPLASH                 // solid color puke emanting from keypress
+#    define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH            // can't tell difference from above
 #  endif
 #endif
 
