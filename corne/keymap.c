@@ -63,9 +63,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_TAB, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, KC_MPLY, KC_MRWD, KC_MFFD, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL, RGB_HUI, RGB_SAI, RGB_VAI, RGB_TOG, XXXXXXX,                      XXXXXXX, KC_MUTE, KC_VOLD, KC_VOLU, XXXXXXX, XXXXXXX,
+      KC_LCTL, RGB_HUI, RGB_SAI, RGB_VAI, RGB_MOD, RGB_TOG,                      XXXXXXX, KC_MUTE, KC_VOLD, KC_VOLU, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSFT, RGB_HUD, RGB_SAD, RGB_VAD, RGB_MOD, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, KC_RSFT,
+      KC_LSFT, RGB_HUD, RGB_SAD, RGB_VAD,RGB_RMOD, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI, TO_WARP,  KC_SPC,     KC_ENT, TO_WARP, KC_RALT
                                       //`--------------------------'  `--------------------------'
@@ -140,16 +140,16 @@ const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [MEDIA] = LAYOUT_split_3x6_3(
       OFF, OFF, OFF,   0, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF,   0, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF, OFF, OFF, OFF,   1,   1,              OFF, OFF, OFF,   0, OFF, OFF,
+      OFF, OFF, OFF, OFF,   1, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   ),
 
   [WARP_ZONE] = LAYOUT_split_3x6_3(
       OFF, OFF, OFF, OFF,   0, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
       OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF,   0, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-                          OFF, OFF, OFF,    OFF, OFF, OFF
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF,   1,   1,   1, OFF, OFF,
+                          OFF, OFF, OFF,    OFF, OFF,   1
   )
 };
 
