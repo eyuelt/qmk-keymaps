@@ -173,7 +173,6 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 // Called every time the layers are changed.
 layer_state_t layer_state_set_user(layer_state_t state) {
-  layer_sync(state);
   return state;
 }
 

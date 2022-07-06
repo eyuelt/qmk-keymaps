@@ -13,6 +13,10 @@
 //#define TAPPING_TERM 100
 
 
+// Sync layer changes across the split.
+#define SPLIT_LAYER_STATE_ENABLE
+
+
 #ifdef RGB_MATRIX_ENABLE
 #  define RGB_MATRIX_KEYPRESSES  // enable effects that react to keypresses (as opposed to keyreleases)
 #  define RGB_MATRIX_FRAMEBUFFER_EFFECTS  // enable framebuffer effects (i.e. heatmap, digital rain)

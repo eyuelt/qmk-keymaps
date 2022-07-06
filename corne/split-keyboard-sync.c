@@ -16,8 +16,8 @@ bool _transaction_rpc_exec_with_retries(
     uint8_t s2m_buffer_size, void *s2m_buffer);
 
 
-// LAYER_SYNC
-// ==========
+// LAYER_SYNC (unused)
+// ===================
 // Sync layer changes across the split. Otherwise, the slave half will not know
 // when the master changes layers. This is required for addressing the LEDs of
 // the slave half.
@@ -101,7 +101,7 @@ void side_sync(void) {
 // ============
 
 void register_sync_transactions(void) {
-  transaction_register_rpc(LAYER_SYNC, _layer_sync_slave_handler);
+  // transaction_register_rpc(LAYER_SYNC, _layer_sync_slave_handler);
   transaction_register_rpc(SIDE_SYNC, _side_sync_slave_handler);
 }
 
