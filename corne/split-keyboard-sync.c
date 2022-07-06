@@ -48,6 +48,9 @@ void layer_sync(const layer_state_t state) {
         break;
       } else {
         dprintf("LAYER_SYNC failed attempt %d\n", sync_attempt);
+        // Adding a 1ms delay here makes repeated failures much less likely.
+        // Note: _delay_ms makes the whole keyboard hang, so use it sparingly.
+        _delay_ms(1);
       }
     }
     if (sync_attempt > MAX_SYNC_RETRIES) {
