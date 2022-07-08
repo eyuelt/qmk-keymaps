@@ -16,7 +16,7 @@ enum custom_keycodes {
   BSP_DEL = SAFE_RANGE,
 };
 
-#define TO_WARP TO(WARP_ZONE)
+#define MO_WARP MO(WARP_ZONE)
 #define MO_SMBL MO(SYMBOLS)
 #define MO_CTRL MO(CONTROLS)
 #define CMD_LBRC LGUI(KC_LBRC)
@@ -43,7 +43,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LPRN, KC_RPRN, KC_LBRC, KC_RBRC,  KC_EQL,                      XXXXXXX,    KC_1,    KC_2,    KC_3, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI, TO_WARP, BSP_DEL,     KC_ENT, _______,    KC_0
+                                          KC_LGUI, MO_WARP, BSP_DEL,     KC_ENT, _______,    KC_0
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -55,7 +55,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,CMD_LBRC,  KC_ESC,CMD_RBRC, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI, _______,  KC_SPC,     KC_ENT, TO_WARP, KC_RALT
+                                          KC_LGUI, _______,  KC_SPC,     KC_ENT, MO_WARP, KC_RALT
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -67,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, RGB_HUD, RGB_SAD, RGB_VAD,RGB_RMOD, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI, TO_WARP,  KC_SPC,     KC_ENT, TO_WARP, KC_RALT
+                                          KC_LGUI, MO_WARP,  KC_SPC,     KC_ENT, MO_WARP, KC_RALT
                                       //`--------------------------'  `--------------------------'
   ),
 
