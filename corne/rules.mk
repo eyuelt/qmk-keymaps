@@ -10,5 +10,7 @@ RGBLIGHT_ENABLE = no     # Disable WS2812 RGB underlight.
 RGB_MATRIX_ENABLE = yes
 LTO_ENABLE      = yes    # Link-time optimization. Reduces binary size.
 
+RGB_MATRIX_CUSTOM_USER = yes  # Allow for custom RGB effects.
+
 # enable debug mode depending on flags provided to build script
 include $(_conditional_dir)/debug/rules.mk

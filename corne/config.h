@@ -37,11 +37,9 @@
 // Note: These take up a lot of space.
 // For full list of effects, see https://docs.qmk.fm/#/feature_rgb_matrix?id=rgb-matrix-effects.
 // To add custom effects, see https://docs.qmk.fm/#/feature_led_matrix?id=custom-rgb-matrix-effects.
-// TODO: add a custom effect that does nothing. otherwise the only way to have
-// no effect is to turn off the LEDs altogether
-#  ifndef CONSOLE_ENABLE  // debug mode needs the additional space
-#    define ENABLE_RGB_MATRIX_BREATHING                    // sine-like oscillation of value
-#    define ENABLE_RGB_MATRIX_BAND_VAL                     // horizontally travelling column of high value
+#  define ENABLE_RGB_MATRIX_BREATHING                      // sine-like oscillation of value
+#  define ENABLE_RGB_MATRIX_BAND_VAL                       // horizontally travelling column of high value
+#  ifndef CONSOLE_ENABLE  // disable most effects in debug mode to conserve space
 //   Note: The problem with this one is that the keys hold their last value.
 //   TODO: Only keep it if we can figure out how to limit effects to the BASE layer.
 #    define ENABLE_RGB_MATRIX_JELLYBEAN_RAINDROPS          // random soft colors with keys changing color randomly
