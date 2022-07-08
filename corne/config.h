@@ -16,6 +16,10 @@
 // Sync layer changes across the split.
 #define SPLIT_LAYER_STATE_ENABLE
 
+// Disable control of the RGB matrix by the normal RGB_* keycodes.
+// We will redefine these keycodes to not write to EEPROM.
+#define RGB_MATRIX_DISABLE_KEYCODES
+
 
 #ifdef RGB_MATRIX_ENABLE
 #  define RGB_MATRIX_KEYPRESSES  // enable effects that react to keypresses (as opposed to keyreleases)

@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LCTL, RGB_HUI, RGB_SAI, RGB_VAI, RGB_MOD, RGB_TOG,                      XXXXXXX, KC_MUTE, KC_VOLD, KC_VOLU, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSFT, RGB_HUD, RGB_SAD, RGB_VAD,RGB_RMOD, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, KC_RSFT,
+      KC_LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI, MO_WARP,  KC_SPC,     KC_ENT, MO_WARP, KC_RALT
                                       //`--------------------------'  `--------------------------'
@@ -83,6 +83,41 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                       //`--------------------------'  `--------------------------'
   )
 };
+
+// TODO: maybe move this to a separate file for rgb stuff
+bool handle_rgb_keycodes(uint16_t keycode, keyrecord_t *record) {
+  const uint8_t mod_state = get_mods();
+  const bool is_shift_on = mod_state & MOD_MASK_SHIFT;
+  if (record->event.pressed) {
+    switch (keycode) {
+      // redefining the normal RGB_* keycodes with no writes to EEPROM
+      case RGB_HUI:
+        is_shift_on ?
+          rgb_matrix_decrease_hue_noeeprom() :
+          rgb_matrix_increase_hue_noeeprom();
+        return false;
+      case RGB_SAI:
+        is_shift_on ?
+          rgb_matrix_decrease_sat_noeeprom() :
+          rgb_matrix_increase_sat_noeeprom();
+        return false;
+      case RGB_VAI:
+        is_shift_on ?
+          rgb_matrix_decrease_val_noeeprom() :
+          rgb_matrix_increase_val_noeeprom();
+        return false;
+      case RGB_MOD:
+        is_shift_on ?
+          rgb_matrix_step_reverse_noeeprom() :
+          rgb_matrix_step_noeeprom();
+        return false;
+      case RGB_TOG:
+        rgb_matrix_toggle_noeeprom();
+        return false;
+    }
+  }
+  return false;
+}
 
 // Called by the system for each key event.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -107,6 +142,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
       }
+    case RGB_TOG ... RGB_MODE_RGBTEST:
+      return handle_rgb_keycodes(keycode, record);
   }
   return true;
 }
@@ -140,8 +177,8 @@ const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [MEDIA] = LAYOUT_split_3x6_3(
       OFF, OFF, OFF,   0, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF,   1,   1,              OFF, OFF, OFF,   0, OFF, OFF,
-      OFF, OFF, OFF, OFF,   1, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
+      OFF,   1,   1,   1,   1, OFF,              OFF, OFF, OFF,   0, OFF, OFF,
+      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
                           OFF, OFF, OFF,    OFF, OFF, OFF
   ),
 
@@ -165,7 +202,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         const uint8_t led_index = g_led_config.matrix_co[row][col];
         // TODO: figure out how to convert HSV to RGB
         // TODO: get the hue value from led_hues, and keep the current saturation and value
-        rgb_matrix_set_color(led_index, RGB_BLUE);
+        rgb_matrix_set_color(led_index, RGB_BLUE);  // Not written to EEPROM
       }
     }
   }
@@ -185,4 +222,7 @@ void keyboard_post_init_user(void) {
 #endif
   register_sync_transactions();
   side_sync();
+  // set initial color/mode for keyboard
+  rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+  rgb_matrix_sethsv_noeeprom(HSV_RED);
 }
