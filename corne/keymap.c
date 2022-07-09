@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "rgb.c"
 #include "split-keyboard-sync.c"
 
 enum layers {
@@ -84,41 +85,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
-// TODO: maybe move this to a separate file for rgb stuff
-bool handle_rgb_keycodes(uint16_t keycode, keyrecord_t *record) {
-  const uint8_t mod_state = get_mods();
-  const bool is_shift_on = mod_state & MOD_MASK_SHIFT;
-  if (record->event.pressed) {
-    switch (keycode) {
-      // redefining the normal RGB_* keycodes with no writes to EEPROM
-      case RGB_HUI:
-        is_shift_on ?
-          rgb_matrix_decrease_hue_noeeprom() :
-          rgb_matrix_increase_hue_noeeprom();
-        return false;
-      case RGB_SAI:
-        is_shift_on ?
-          rgb_matrix_decrease_sat_noeeprom() :
-          rgb_matrix_increase_sat_noeeprom();
-        return false;
-      case RGB_VAI:
-        is_shift_on ?
-          rgb_matrix_decrease_val_noeeprom() :
-          rgb_matrix_increase_val_noeeprom();
-        return false;
-      case RGB_MOD:
-        is_shift_on ?
-          rgb_matrix_step_reverse_noeeprom() :
-          rgb_matrix_step_noeeprom();
-        return false;
-      case RGB_TOG:
-        rgb_matrix_toggle_noeeprom();
-        return false;
-    }
-  }
-  return false;
-}
-
 // Called by the system for each key event.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   const uint8_t mod_state = get_mods();
@@ -143,7 +109,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
     case RGB_TOG ... RGB_MODE_RGBTEST:
-      return handle_rgb_keycodes(keycode, record);
+      return
+        rgb_key_custom_behavior(keycode, record) &&
+        rgb_key_default_behavior(keycode, record);
   }
   return true;
 }
