@@ -1,7 +1,45 @@
 // Handles RGB-related functionality.
 
+#include "print.h"  // for debug output
+
+// Save the rgb matrix mode in order to restore it later.
+static uint8_t saved_rgb_matrix_mode_ = 0;
+void set_saved_rgb_matrix_mode(uint8_t mode) {
+  dprintf("set_saved_rgb_matrix_mode(%d)\n", mode);
+  saved_rgb_matrix_mode_ = mode;
+}
+uint8_t get_saved_rgb_matrix_mode(void) {
+  dprintf("get_saved_rgb_matrix_mode() => %d\n", saved_rgb_matrix_mode_);
+  return saved_rgb_matrix_mode_;
+}
+
+// If the given rgb matrix mode is outside of the bounds, wrap around
+uint8_t wrapped_rgb_matrix_mode(const uint8_t mode) {
+  uint8_t wrapped = mode;
+  if (wrapped <= RGB_MATRIX_NONE) {
+    wrapped = RGB_MATRIX_EFFECT_MAX - 1;
+  } else if (wrapped >= RGB_MATRIX_EFFECT_MAX) {
+    wrapped = RGB_MATRIX_NONE + 1;
+  }
+  return wrapped;
+}
+
 // Define custom behavior for any RGB-related keys.
 bool rgb_key_custom_behavior(uint16_t keycode, keyrecord_t *record) {
+  const uint8_t mod_state = get_mods();
+  switch (keycode) {
+    case RGB_MOD:
+      if (record->event.pressed) {
+        if (mod_state & MOD_MASK_SHIFT) {
+          set_saved_rgb_matrix_mode(
+              wrapped_rgb_matrix_mode(get_saved_rgb_matrix_mode() - 1));
+        } else {
+          set_saved_rgb_matrix_mode(
+              wrapped_rgb_matrix_mode(get_saved_rgb_matrix_mode() + 1));
+        }
+      }
+      return false;
+  }
   return true;
 }
 

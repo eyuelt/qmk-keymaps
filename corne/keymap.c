@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "layer.c"
 #include "rgb.c"
 #include "split-keyboard-sync.c"
 
@@ -160,7 +161,7 @@ const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
 
 #undef OFF
 
-// Called by the system to allow setting the value for all LEDs on the keyboard.
+// Called by the system to allow setting all LEDs on the keyboard.
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   const int16_t (*layer_led_hues)[MATRIX_COLS] =
     led_hues[get_highest_layer(layer_state)];
@@ -178,6 +179,12 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 // Called every time the layers are changed.
 layer_state_t layer_state_set_user(layer_state_t state) {
+  if (leaving_layer(BASE, layer_state, state)) {
+    set_saved_rgb_matrix_mode(rgb_matrix_get_mode());
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_null_effect);
+  } else if (entering_layer(BASE, layer_state, state)) {
+    rgb_matrix_mode_noeeprom(get_saved_rgb_matrix_mode());
+  }
   return state;
 }
 
@@ -191,6 +198,5 @@ void keyboard_post_init_user(void) {
   register_sync_transactions();
   side_sync();
   // set initial color/mode for keyboard
-  rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-  rgb_matrix_sethsv_noeeprom(HSV_RED);
+  rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_null_effect);
 }
