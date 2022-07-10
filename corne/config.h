@@ -68,7 +68,3 @@
 #    define RGBLIGHT_EFFECT_TWINKLE
 #  endif
 #endif
-
-
-// Transaction IDs for sending messages across the split.
-#define SPLIT_TRANSACTION_IDS_USER LAYER_SYNC, SIDE_SYNC

@@ -4,7 +4,6 @@
 
 #include "layer.c"
 #include "rgb.c"
-#include "split-keyboard-sync.c"
 
 enum layers {
   BASE,
@@ -196,7 +195,6 @@ void keyboard_post_init_user(void) {
   debug_enable = true;
   debug_matrix = true;
 #endif
-  register_sync_transactions();
   // set initial color/mode for keyboard
   rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_null_effect);
 }
