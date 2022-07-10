@@ -197,7 +197,6 @@ void keyboard_post_init_user(void) {
   debug_matrix = true;
 #endif
   register_sync_transactions();
-  side_sync();
   // set initial color/mode for keyboard
   rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_null_effect);
 }

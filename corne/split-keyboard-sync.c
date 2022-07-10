@@ -54,8 +54,8 @@ void layer_sync(const layer_state_t state) {
 }
 
 
-// SIDE_SYNC
-// =========
+// SIDE_SYNC (unused)
+// ==================
 // Sometimes we flash the keyboards differently: one with MASTER_LEFT, the
 // other with MASTER_RIGHT. In this case, the slave will be incorrect about
 // whether it is the left or right half. As a result, it will end up displaying
@@ -102,7 +102,7 @@ void side_sync(void) {
 
 void register_sync_transactions(void) {
   // transaction_register_rpc(LAYER_SYNC, _layer_sync_slave_handler);
-  transaction_register_rpc(SIDE_SYNC, _side_sync_slave_handler);
+  // transaction_register_rpc(SIDE_SYNC, _side_sync_slave_handler);
 }
 
 

@@ -49,7 +49,6 @@
 #      define ENABLE_RGB_MATRIX_DIGITAL_RAIN               // matrix-like rain falling one-by-one from top to bottom
 #    endif
 #    if defined(RGB_MATRIX_KEYPRESSES) || defined(RGB_MATRIX_KEYRELEASES)  // required for these effects
-//     TODO: these are broken. they are being mirrored for some reason
 #      define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE      // simple glow on keypress
 #      define ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE        // big glow on keypress
 #      define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTIWIDE   // big glow on keypress of multiple keys
