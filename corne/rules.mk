@@ -5,12 +5,20 @@
 _path_to_this_file = $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 _conditional_dir = $(abspath $(dir $(_path_to_this_file))/conditional)
 
-MOUSEKEY_ENABLE = yes    # Mouse keys
+
+# Enable mouse keys
+MOUSEKEY_ENABLE = yes
+
+# Link-time optimization. Reduces binary size but increases compile time.
+LTO_ENABLE = yes
+
+# Only one of these can be enabled at a time.
+RGB_MATRIX_ENABLE = yes  # Enable RGB matrix.
 RGBLIGHT_ENABLE = no     # Disable WS2812 RGB underlight.
-RGB_MATRIX_ENABLE = yes
-LTO_ENABLE      = yes    # Link-time optimization. Reduces binary size.
 
-RGB_MATRIX_CUSTOM_USER = yes  # Allow for custom RGB effects.
+# Allow for custom RGB effects.
+RGB_MATRIX_CUSTOM_USER = yes
 
-# enable debug mode depending on flags provided to build script
+
+# Enable/disable debug mode depending on flags provided to the build script.
 include $(_conditional_dir)/debug/rules.mk

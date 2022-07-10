@@ -117,7 +117,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 
-// ---------------------------- LEDs ---------------------------- //
+// ------------------------------ LEDs ------------------------------ //
+// Note: changes here require a reflash of both halves of the keyboard.
 
 #define OFF -1
 
@@ -168,7 +169,6 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
       if (layer_led_hues[row][col] >= 0 && layer_led_hues[row][col] < 256) {
         const uint8_t led_index = g_led_config.matrix_co[row][col];
-        // TODO: figure out how to convert HSV to RGB
         // TODO: get the hue value from led_hues, and keep the current saturation and value
         rgb_matrix_set_color(led_index, RGB_BLUE);  // Not written to EEPROM
       }
