@@ -1,5 +1,4 @@
 #! /usr/local/bin/python3
-#
 # Minimum python version: 3.5
 
 import argparse
@@ -12,6 +11,7 @@ from collections import namedtuple
 KEYMAP_PREFIX = os.environ['USER']
 KEYBOARD_DIR_CONFIG_FILE_NAME='KEYBOARD'
 CONDITIONAL_DIR_NAME='conditional'
+QMK_FIRMWARE_REPO = 'https://github.com/qmk/qmk_firmware.git'
 
 def log_info(msg, gap_above=False):
     print('%s\033[36mINFO: %s\033[m' % ('\n' if gap_above else '', msg))
@@ -44,8 +44,7 @@ def update_qmk_firmware_code(qmk_firmware_root):
     log_info('Updating qmk_firmware code', gap_above=True)
     saved_dir = os.getcwd()
     if not os.path.exists(qmk_firmware_root):
-        # TODO: 'https://github.com/qmk/qmk_firmware.git'
-        run_cmd(['git', 'clone', 'https://github.com/eyuelt/qmk_firmware.git', qmk_firmware_root])
+        run_cmd(['git', 'clone', QMK_FIRMWARE_REPO, qmk_firmware_root])
         run_cmd(['make', 'git-submodule', '-C', qmk_firmware_root])
         return
     os.chdir(qmk_firmware_root)
