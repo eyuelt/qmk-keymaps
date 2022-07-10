@@ -106,6 +106,16 @@ def parse_args(project_root):
   parser.add_argument('--clean', action='store_true', default=False, help='delete generated files')
   return parser.parse_args()
 
+def get_keyboard(args, project_root, qmk_firmware_root):
+    if args.keyboard is not None:
+        keyboard = args.keyboard
+    else:
+        f = open(os.path.join(project_root, args.keymap_dir, KEYBOARD_DIR_CONFIG_FILE_NAME), "r")
+        keyboard = f.read().strip()
+    if not os.path.isdir(os.path.join(qmk_firmware_root, 'keyboards', keyboard)):
+        raise Exception('Invalid keyboard: %s' % keyboard)
+    return keyboard
+
 def main():
     project_root = os.path.abspath(os.path.dirname(__file__))
     args = parse_args(project_root)
@@ -118,18 +128,14 @@ def main():
         log_error('Invalid keymap_dir: %s' % args.keymap_dir)
         return
     keymap_name='%s_%s' % (KEYMAP_PREFIX, args.keymap_dir)
-    if args.keyboard is not None:
-        keyboard = args.keyboard
-    else:
-        f = open(os.path.join(project_root, args.keymap_dir, KEYBOARD_DIR_CONFIG_FILE_NAME), "r")
-        keyboard = f.read().strip()
-    if not os.path.isdir(os.path.join(qmk_firmware_root, 'keyboards', keyboard)):
-        log_error('Invalid keyboard: %s' % keyboard)
-        return
-    enabled_conditional_compilation_flags = args.conditional_compilation_flags.split(',')
-    # TODO: make sure they are all valid for this keymap
+    enabled_conditional_compilation_flags = args.conditional_compilation_flags.split(',')  # TODO: make sure they are all valid for this keymap
 
     update_qmk_firmware_code(qmk_firmware_root)
+    try:
+        keyboard = get_keyboard(args, project_root, qmk_firmware_root)
+    except Exception as e:
+        log_error(e)
+        return
     copy_keymap_files(project_root, qmk_firmware_root, keyboard, args.keymap_dir, keymap_name, enabled_conditional_compilation_flags)
     compile_keymap(qmk_firmware_root, keyboard, keymap_name)
     move_hex_file_to_root_dir(project_root, qmk_firmware_root, keyboard, keymap_name)
