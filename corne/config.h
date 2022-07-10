@@ -2,12 +2,8 @@
 
 //#define USE_MATRIX_I2C
 
-/* Select hand configuration */
-
-#include "conditional/master_left/config.h"
-// #define MASTER_LEFT
-// #define MASTER_RIGHT
-// #define EE_HANDS
+// Determine hand configuration from data flashed on keyboard halves.
+#define EE_HANDS
 
 //#define TAPPING_FORCE_HOLD
 //#define TAPPING_TERM 100
