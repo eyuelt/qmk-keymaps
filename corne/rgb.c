@@ -24,6 +24,20 @@ uint8_t wrapped_rgb_matrix_mode(const uint8_t mode) {
   return wrapped;
 }
 
+static bool is_in_rgb_matrix_preview_ = false;
+void begin_rgb_matrix_preview(void) {
+  if (!is_in_rgb_matrix_preview_) {
+    rgb_matrix_mode_noeeprom(get_saved_rgb_matrix_mode());
+    is_in_rgb_matrix_preview_ = true;
+  }
+}
+void end_rgb_matrix_preview(void) {
+  if (is_in_rgb_matrix_preview_) {
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_null_effect);
+    is_in_rgb_matrix_preview_ = false;
+  }
+}
+
 // Define custom behavior for any RGB-related keys.
 bool rgb_key_custom_behavior(uint16_t keycode, keyrecord_t *record) {
   const uint8_t mod_state = get_mods();
@@ -37,6 +51,9 @@ bool rgb_key_custom_behavior(uint16_t keycode, keyrecord_t *record) {
           set_saved_rgb_matrix_mode(
               wrapped_rgb_matrix_mode(get_saved_rgb_matrix_mode() + 1));
         }
+        begin_rgb_matrix_preview();
+      } else {
+        end_rgb_matrix_preview();
       }
       return false;
   }
