@@ -121,45 +121,63 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 // Note: changes here require a reflash of both halves of the keyboard.
 
 #define OFF -1
+#define HSV_DEGREES_TO_HSV_8BIT(deg) (uint8_t)(deg % 360 / 360.0 * 256)
+#define BLU HSV_DEGREES_TO_HSV_8BIT(240)
+#define GRN HSV_DEGREES_TO_HSV_8BIT(120)
+#define MAG HSV_DEGREES_TO_HSV_8BIT(300)
+#define YLW HSV_DEGREES_TO_HSV_8BIT( 60)
+#define VIO HSV_DEGREES_TO_HSV_8BIT(270)
+#define RED HSV_DEGREES_TO_HSV_8BIT(  0)
+#define CYN HSV_DEGREES_TO_HSV_8BIT(180)
+#define ORG HSV_DEGREES_TO_HSV_8BIT( 30)
 
 const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE] = LAYOUT_split_3x6_3(
-        0, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,                0, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-                          OFF, OFF, OFF,    OFF, OFF, OFF
+       BLU,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  OFF,  OFF,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  OFF,  OFF,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  OFF,  OFF,  OFF,  OFF,
+                               OFF,  OFF,  OFF,    OFF,  OFF,  OFF
   ),
 
   [SYMBOLS] = LAYOUT_split_3x6_3(
-      OFF,   0, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF,   0, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-                          OFF, OFF, OFF,    OFF, OFF, OFF
+       OFF,  BLU,  OFF,  OFF,  OFF,  OFF,                OFF,  MAG,  MAG,  MAG,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  MAG,  MAG,  MAG,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  MAG,  MAG,  MAG,  OFF,  OFF,
+                               OFF,  OFF,  OFF,    OFF,  OFF,  MAG
   ),
 
   [CONTROLS] = LAYOUT_split_3x6_3(
-      OFF, OFF,   0, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF,   0, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-                          OFF, OFF, OFF,    OFF, OFF, OFF
+       OFF,  OFF,  BLU,  VIO,  OFF,  OFF,                VIO,  OFF,  CYN,  OFF,  OFF,  OFF,
+       OFF,  OFF,  VIO,  VIO,  VIO,  OFF,                VIO,  CYN,  CYN,  CYN,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  OFF,  OFF,  OFF,  OFF,
+                               OFF,  OFF,  OFF,    OFF,  OFF,  OFF
   ),
 
   [MEDIA] = LAYOUT_split_3x6_3(
-      OFF, OFF, OFF,   0, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF,   1,   1,   1,   1, OFF,              OFF, OFF, OFF,   0, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-                          OFF, OFF, OFF,    OFF, OFF, OFF
+       OFF,  OFF,  OFF,  BLU,  OFF,  OFF,                OFF,  MAG,  MAG,  MAG,  OFF,  OFF,
+       OFF,  ORG,  ORG,  ORG,  ORG,  OFF,                OFF,  RED,  BLU,  BLU,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  YLW,  YLW,  OFF,  OFF,
+                               OFF,  OFF,  OFF,    OFF,  OFF,  OFF
   ),
 
   [WARP_ZONE] = LAYOUT_split_3x6_3(
-      OFF, OFF, OFF, OFF,   0, OFF,              OFF, OFF, OFF, OFF, OFF, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF, OFF, OFF, OFF,   0, OFF,
-      OFF, OFF, OFF, OFF, OFF, OFF,              OFF,   1,   1,   1, OFF, OFF,
-                          OFF, OFF, OFF,    OFF, OFF,   1
+       OFF,  OFF,  OFF,  OFF,  BLU,  OFF,                OFF,  OFF,  OFF,  OFF,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  OFF,  OFF,  OFF,  OFF,
+       OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  GRN,  GRN,  GRN,  OFF,  OFF,
+                               OFF,  OFF,  OFF,    OFF,  OFF,  GRN
   )
 };
 
 #undef OFF
+#undef HSV_DEGREES_TO_HSV_8BIT
+#undef BLU
+#undef GRN
+#undef MAG
+#undef YLW
+#undef VIO
+#undef RED
+#undef CYN
+#undef ORG
 
 // Called by the system to allow setting all LEDs on the keyboard.
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
@@ -167,10 +185,12 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     led_hues[get_highest_layer(layer_state)];
   for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
     for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-      if (layer_led_hues[row][col] >= 0 && layer_led_hues[row][col] < 256) {
+      const int16_t hue_for_key = layer_led_hues[row][col];
+      if (hue_for_key >= 0 && hue_for_key < 256) {
         const uint8_t led_index = g_led_config.matrix_co[row][col];
-        // TODO: get the hue value from led_hues, and keep the current saturation and value
-        rgb_matrix_set_color(led_index, RGB_BLUE);  // Not written to EEPROM
+        const HSV hsv = {hue_for_key, rgb_matrix_get_sat(), rgb_matrix_get_val()};
+        const RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(led_index, rgb.r, rgb.g, rgb.b);  // Not written to EEPROM
       }
     }
   }
