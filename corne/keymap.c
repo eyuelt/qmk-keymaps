@@ -22,6 +22,7 @@ enum custom_keycodes {
 #define MO_CTRL MO(CONTROLS)
 #define CMD_LBRC LGUI(KC_LBRC)
 #define CMD_RBRC LGUI(KC_RBRC)
+#define LK_SCRN LGUI(LCTL(KC_Q))  // Cmd+Ctrl+Q locks the screen on OSX
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE] = LAYOUT_split_3x6_3(
@@ -62,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [MEDIA] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, KC_MPLY, KC_MRWD, KC_MFFD, XXXXXXX, XXXXXXX,
+       KC_TAB, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, KC_MPLY, KC_MRWD, KC_MFFD, XXXXXXX, LK_SCRN,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LCTL, RGB_HUI, RGB_SAI, RGB_VAI, RGB_MOD, RGB_TOG,                      XXXXXXX, KC_MUTE, KC_VOLD, KC_VOLU, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -154,7 +155,7 @@ const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [MEDIA] = LAYOUT_split_3x6_3(
-       OFF,  OFF,  OFF,  BLU,  OFF,  OFF,                OFF,  MAG,  MAG,  MAG,  OFF,  OFF,
+       OFF,  OFF,  OFF,  BLU,  OFF,  OFF,                OFF,  MAG,  MAG,  MAG,  OFF,  RED,
        OFF,  ORG,  ORG,  ORG,  ORG,  OFF,                OFF,  RED,  BLU,  BLU,  OFF,  OFF,
        OFF,  OFF,  OFF,  OFF,  OFF,  OFF,                OFF,  OFF,  YLW,  YLW,  OFF,  OFF,
                                OFF,  OFF,  OFF,    OFF,  OFF,  OFF
