@@ -82,34 +82,52 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
-// Called by the system for each key event.
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+// Registers/unregisters the given keycode for the given partial mod state.
+// Returns true if the keycode was registered/unregistered.
+bool use_keycode_for_partial_mod_state_(
+    uint16_t keycode, uint8_t partial_mod_state, bool is_keypress) {
   const uint8_t mod_state = get_mods();
-  switch (keycode) {
-    // regular backspace except it's treated as delete if shift is held
-    case KC_BSPC: {
-      static bool del_registered = false;
-      if (record->event.pressed) {
-        // on keypress, if shifted, register KC_DEL
-        if (mod_state & MOD_MASK_SHIFT) {
-          set_mods(mod_state & ~MOD_MASK_SHIFT);
-          register_code(KC_DEL);
-          del_registered = true;
-          set_mods(mod_state);
-          return false;
-        }
-      } else {
-        // on keyrelease, if KC_DEL was registered, unregister
-        // Note that we don't care if shift is still pressed.
-        if (del_registered) {
-          unregister_code(KC_DEL);
-          del_registered = false;
-          return false;
-        }
-      }
-      // otherwise, do normal KC_BSPC behavior
+  static bool key_registered = false;
+  if (is_keypress) {
+    // on keypress, if we are in the expected mod_state, register the key
+    if (mod_state & partial_mod_state) {
+      set_mods(mod_state & ~partial_mod_state);
+      register_code(keycode);
+      key_registered = true;
+      set_mods(mod_state);
       return true;
     }
+  } else {
+    // on keyrelease, if the key was registered, unregister
+    // Note that we don't care what the mod_state is, because even if it has
+    // changed, we still want to unregister on keyrelease.
+    if (key_registered) {
+      unregister_code(keycode);
+      key_registered = false;
+      return true;
+    }
+  }
+  return false;
+}
+
+// Called by the system for each key event.
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case KC_BSPC:
+      // If shift is pressed, do KC_DEL. Otherwise, return true so QMK can
+      // continue with normal KC_BSPC behavior
+      return !use_keycode_for_partial_mod_state_(
+          KC_DEL, MOD_MASK_SHIFT, /*is_keypress=*/record->event.pressed);
+    case KC_WH_D:
+      // If shift is pressed, do KC_WH_R. Otherwise, return true so QMK can
+      // continue with normal KC_WH_D behavior
+      return !use_keycode_for_partial_mod_state_(
+          KC_WH_R, MOD_MASK_SHIFT, /*is_keypress=*/record->event.pressed);
+    case KC_WH_U:
+      // If shift is pressed, do KC_WH_L. Otherwise, return true so QMK can
+      // continue with normal KC_WH_U behavior
+      return !use_keycode_for_partial_mod_state_(
+          KC_WH_L, MOD_MASK_SHIFT, /*is_keypress=*/record->event.pressed);
     case RGB_TOG ... RGB_MODE_RGBTEST:
       return
         rgb_key_custom_behavior(keycode, record) &&
