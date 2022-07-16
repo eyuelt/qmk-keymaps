@@ -13,10 +13,6 @@ enum layers {
   WARP_ZONE
 };
 
-enum custom_keycodes {
-  BSP_DEL = SAFE_RANGE,
-};
-
 #define MO_WARP MO(WARP_ZONE)
 #define MO_SMBL MO(SYMBOLS)
 #define MO_CTRL MO(CONTROLS)
@@ -45,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LPRN, KC_RPRN, KC_LBRC, KC_RBRC,  KC_EQL,                      XXXXXXX,    KC_1,    KC_2,    KC_3, XXXXXXX, KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI, MO_WARP, BSP_DEL,     KC_ENT, MO_WARP,    KC_0
+                                          KC_LGUI, MO_WARP, KC_BSPC,     KC_ENT, MO_WARP,    KC_0
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -91,31 +87,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   const uint8_t mod_state = get_mods();
   switch (keycode) {
     // regular backspace except it's treated as delete if shift is held
-    case BSP_DEL: {
+    case KC_BSPC: {
       static bool del_registered = false;
-      static bool bksp_registered = false;
       if (record->event.pressed) {
+        // on keypress, if shifted, register KC_DEL
         if (mod_state & MOD_MASK_SHIFT) {
           set_mods(mod_state & ~MOD_MASK_SHIFT);
           register_code(KC_DEL);
           del_registered = true;
           set_mods(mod_state);
-        } else {
-          register_code(KC_BSPC);
-          bksp_registered = true;
+          return false;
         }
-        return false;
       } else {
+        // on keyrelease, if KC_DEL was registered, unregister
+        // Note that we don't care if shift is still pressed.
         if (del_registered) {
           unregister_code(KC_DEL);
           del_registered = false;
+          return false;
         }
-        if (bksp_registered) {
-          unregister_code(KC_BSPC);
-          bksp_registered = false;
-        }
-        return false;
       }
+      // otherwise, do normal KC_BSPC behavior
+      return true;
     }
     case RGB_TOG ... RGB_MODE_RGBTEST:
       return
