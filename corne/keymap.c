@@ -91,24 +91,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   const uint8_t mod_state = get_mods();
   switch (keycode) {
     // regular backspace except it's treated as delete if shift is held
-    case BSP_DEL:
-      if (mod_state & MOD_MASK_SHIFT) {
-        set_mods(mod_state & ~MOD_MASK_SHIFT);
-        if (record->event.pressed) {
+    case BSP_DEL: {
+      static bool del_registered = false;
+      static bool bksp_registered = false;
+      if (record->event.pressed) {
+        if (mod_state & MOD_MASK_SHIFT) {
+          set_mods(mod_state & ~MOD_MASK_SHIFT);
           register_code(KC_DEL);
+          del_registered = true;
+          set_mods(mod_state);
         } else {
-          unregister_code(KC_DEL);
+          register_code(KC_BSPC);
+          bksp_registered = true;
         }
-        set_mods(mod_state);
         return false;
       } else {
-        if (record->event.pressed) {
-          register_code(KC_BSPC);
-        } else {
+        if (del_registered) {
+          unregister_code(KC_DEL);
+          del_registered = false;
+        }
+        if (bksp_registered) {
           unregister_code(KC_BSPC);
+          bksp_registered = false;
         }
         return false;
       }
+    }
     case RGB_TOG ... RGB_MODE_RGBTEST:
       return
         rgb_key_custom_behavior(keycode, record) &&
