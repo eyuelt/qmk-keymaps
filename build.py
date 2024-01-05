@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3
+#! /opt/homebrew/bin/python3
 # Minimum python version: 3.5
 
 import argparse
