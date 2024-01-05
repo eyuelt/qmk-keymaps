@@ -1,5 +1,8 @@
 #! /opt/homebrew/bin/python3
 # Minimum python version: 3.5
+#
+# Note: If running this for the first time, you must first install and setup QMK
+# using `brew install qmk/qmk/qmk; qmk setup;`.
 
 import argparse
 import glob
