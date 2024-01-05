@@ -200,7 +200,7 @@ const int16_t led_hues[][MATRIX_ROWS][MATRIX_COLS] = {
 #undef ORG
 
 // Called by the system to allow setting all LEDs on the keyboard.
-void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   const int16_t (*layer_led_hues)[MATRIX_COLS] =
     led_hues[get_highest_layer(layer_state)];
   for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
@@ -214,6 +214,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
       }
     }
   }
+  return false;
 }
 
 // Called every time the layers are changed.
